@@ -64,15 +64,16 @@ class ObjectDetectionAnalyzer(
             }
     }
 
-    private fun processDetectedObject(obj: DetectedObject): DetectedObstacle? {
+    private fun processDetectedObject(obj: DetectedObject): DetectedObstacle {
         val box = obj.boundingBox
         val position = analyzePosition(box)
         val proximity = analyzeProximity(box)
 
         val label = if (obj.labels.isNotEmpty()) {
-            obj.labels.first().text
+            val mlLabel = obj.labels.first()
+            classifyObject(mlLabel.text, mlLabel.index, proximity)
         } else {
-            "Objeto"
+            classifyBySize(proximity)
         }
 
         val confidence = if (obj.labels.isNotEmpty()) {
@@ -89,6 +90,31 @@ class ObjectDetectionAnalyzer(
             confidence = confidence,
             trackingId = obj.trackingId
         )
+    }
+
+    private fun classifyObject(
+        mlLabel: String,
+        categoryIndex: Int,
+        proximity: ObstacleProximity
+    ): String {
+        return when (categoryIndex) {
+            CATEGORY_FASHION_GOOD -> {
+                if (proximity == ObstacleProximity.NEAR) "Persona" else "Persona u objeto"
+            }
+            CATEGORY_HOME_GOOD -> "Mueble"
+            CATEGORY_FOOD -> "Objeto cercano"
+            CATEGORY_PLACE -> "Estructura"
+            CATEGORY_PLANT -> "Planta"
+            else -> DetectedObstacle.translateLabel(mlLabel)
+        }
+    }
+
+    private fun classifyBySize(proximity: ObstacleProximity): String {
+        return when (proximity) {
+            ObstacleProximity.NEAR -> "Obstáculo"
+            ObstacleProximity.MEDIUM -> "Objeto"
+            ObstacleProximity.FAR -> "Objeto detectado"
+        }
     }
 
     private fun analyzePosition(box: Rect): ObstaclePosition {
@@ -121,8 +147,14 @@ class ObjectDetectionAnalyzer(
 
     companion object {
         private const val TAG = "ObjectDetectionAnalyzer"
-        private const val ANALYSIS_INTERVAL_MS = 800L
+        private const val ANALYSIS_INTERVAL_MS = 500L
         private const val NEAR_THRESHOLD = 0.15f
         private const val MEDIUM_THRESHOLD = 0.05f
+
+        private const val CATEGORY_FASHION_GOOD = 0
+        private const val CATEGORY_FOOD = 1
+        private const val CATEGORY_HOME_GOOD = 2
+        private const val CATEGORY_PLACE = 3
+        private const val CATEGORY_PLANT = 4
     }
 }

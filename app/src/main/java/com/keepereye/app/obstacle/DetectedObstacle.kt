@@ -7,7 +7,7 @@ enum class ObstaclePosition {
 }
 
 enum class ObstacleProximity(val label: String) {
-    NEAR("cerca"),
+    NEAR("muy cerca"),
     MEDIUM("a media distancia"),
     FAR("lejos")
 }
@@ -27,9 +27,23 @@ data class DetectedObstacle(
             ObstaclePosition.RIGHT -> "a la derecha"
         }
         return when (proximity) {
-            ObstacleProximity.NEAR -> "Obstáculo $posLabel, muy cerca"
-            ObstacleProximity.MEDIUM -> "Objeto $posLabel"
-            ObstacleProximity.FAR -> "Objeto detectado $posLabel, ${ proximity.label }"
+            ObstacleProximity.NEAR -> "$label $posLabel, muy cerca"
+            ObstacleProximity.MEDIUM -> "$label $posLabel"
+            ObstacleProximity.FAR -> "$label $posLabel, lejos"
+        }
+    }
+
+    companion object {
+        private val LABEL_MAP = mapOf(
+            "Fashion good" to "Persona u objeto",
+            "Home good" to "Mueble",
+            "Food" to "Objeto",
+            "Place" to "Estructura",
+            "Plant" to "Planta"
+        )
+
+        fun translateLabel(englishLabel: String): String {
+            return LABEL_MAP[englishLabel] ?: "Obstáculo"
         }
     }
 }

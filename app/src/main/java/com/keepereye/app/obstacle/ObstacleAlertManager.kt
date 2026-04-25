@@ -57,31 +57,50 @@ class ObstacleAlertManager(
     }
 
     private fun vibrateForProximity(proximity: ObstacleProximity) {
-        val durationMs = when (proximity) {
-            ObstacleProximity.NEAR -> 400L
-            ObstacleProximity.MEDIUM -> 200L
-            ObstacleProximity.FAR -> 80L
-        }
-        val amplitude = when (proximity) {
-            ObstacleProximity.NEAR -> 255
-            ObstacleProximity.MEDIUM -> 150
-            ObstacleProximity.FAR -> 80
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val pattern = when (proximity) {
+                ObstacleProximity.NEAR -> {
+                    longArrayOf(0, 200, 100, 200, 100, 200)
+                }
+                ObstacleProximity.MEDIUM -> {
+                    longArrayOf(0, 150, 150, 150)
+                }
+                ObstacleProximity.FAR -> {
+                    longArrayOf(0, 80)
+                }
+            }
+            val amplitudes = when (proximity) {
+                ObstacleProximity.NEAR -> {
+                    intArrayOf(0, 255, 0, 255, 0, 255)
+                }
+                ObstacleProximity.MEDIUM -> {
+                    intArrayOf(0, 150, 0, 150)
+                }
+                ObstacleProximity.FAR -> {
+                    intArrayOf(0, 60)
+                }
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager =
-                context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            val vibrator = vibratorManager.defaultVibrator
-            vibrator.vibrate(VibrationEffect.createOneShot(durationMs, amplitude))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager =
+                    context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                val vibrator = vibratorManager.defaultVibrator
+                vibrator.vibrate(VibrationEffect.createWaveform(pattern, amplitudes, -1))
+            } else {
+                @Suppress("DEPRECATION")
+                val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                vibrator.vibrate(VibrationEffect.createWaveform(pattern, amplitudes, -1))
+            }
         } else {
             @Suppress("DEPRECATION")
             val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(durationMs, amplitude))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(durationMs)
+            val durationMs = when (proximity) {
+                ObstacleProximity.NEAR -> 500L
+                ObstacleProximity.MEDIUM -> 250L
+                ObstacleProximity.FAR -> 80L
             }
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(durationMs)
         }
     }
 
@@ -91,8 +110,8 @@ class ObstacleAlertManager(
     }
 
     companion object {
-        private const val COOLDOWN_NEAR_MS = 2000L
-        private const val COOLDOWN_MEDIUM_MS = 4000L
-        private const val COOLDOWN_FAR_MS = 6000L
+        private const val COOLDOWN_NEAR_MS = 1500L
+        private const val COOLDOWN_MEDIUM_MS = 3000L
+        private const val COOLDOWN_FAR_MS = 5000L
     }
 }
