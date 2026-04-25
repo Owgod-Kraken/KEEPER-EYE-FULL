@@ -2,6 +2,7 @@ package com.keepereye.app.obstacle
 
 import android.graphics.Rect
 import android.util.Log
+import android.util.Size
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -12,7 +13,7 @@ import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 
 class ObjectDetectionAnalyzer(
-    private val onObstaclesDetected: (List<DetectedObstacle>) -> Unit
+    private val onObstaclesDetected: (List<DetectedObstacle>, Size) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     private val options = ObjectDetectorOptions.Builder()
@@ -22,18 +23,14 @@ class ObjectDetectionAnalyzer(
         .build()
 
     private val detector = ObjectDetection.getClient(options)
-    private var lastAnalysisTime = 0L
-    private var imageWidth = 0
-    private var imageHeight = 0
+    private var isDetecting = false
 
     @OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastAnalysisTime < ANALYSIS_INTERVAL_MS) {
+        if (isDetecting) {
             imageProxy.close()
             return
         }
-        lastAnalysisTime = currentTime
 
         val mediaImage = imageProxy.image
         if (mediaImage == null) {
@@ -41,33 +38,46 @@ class ObjectDetectionAnalyzer(
             return
         }
 
-        imageWidth = imageProxy.width
-        imageHeight = imageProxy.height
+        isDetecting = true
 
-        val image = InputImage.fromMediaImage(
-            mediaImage,
-            imageProxy.imageInfo.rotationDegrees
-        )
+        val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+        val imageWidth: Int
+        val imageHeight: Int
+        if (rotationDegrees == 90 || rotationDegrees == 270) {
+            imageWidth = imageProxy.height
+            imageHeight = imageProxy.width
+        } else {
+            imageWidth = imageProxy.width
+            imageHeight = imageProxy.height
+        }
+
+        val image = InputImage.fromMediaImage(mediaImage, rotationDegrees)
 
         detector.process(image)
             .addOnSuccessListener { results ->
-                val obstacles = results.mapNotNull { obj ->
-                    processDetectedObject(obj)
+                val obstacles = results.map { obj ->
+                    processDetectedObject(obj, imageWidth, imageHeight)
                 }
-                onObstaclesDetected(obstacles)
+                onObstaclesDetected(obstacles, Size(imageWidth, imageHeight))
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Object detection failed", e)
+                onObstaclesDetected(emptyList(), Size(imageWidth, imageHeight))
             }
             .addOnCompleteListener {
+                isDetecting = false
                 imageProxy.close()
             }
     }
 
-    private fun processDetectedObject(obj: DetectedObject): DetectedObstacle {
+    private fun processDetectedObject(
+        obj: DetectedObject,
+        imgWidth: Int,
+        imgHeight: Int
+    ): DetectedObstacle {
         val box = obj.boundingBox
-        val position = analyzePosition(box)
-        val proximity = analyzeProximity(box)
+        val position = analyzePosition(box, imgWidth)
+        val proximity = analyzeProximity(box, imgWidth, imgHeight)
 
         val label = if (obj.labels.isNotEmpty()) {
             val mlLabel = obj.labels.first()
@@ -117,9 +127,9 @@ class ObjectDetectionAnalyzer(
         }
     }
 
-    private fun analyzePosition(box: Rect): ObstaclePosition {
+    private fun analyzePosition(box: Rect, imgWidth: Int): ObstaclePosition {
         val centerX = box.centerX().toFloat()
-        val frameWidth = if (imageWidth > 0) imageWidth.toFloat() else 480f
+        val frameWidth = imgWidth.toFloat().coerceAtLeast(1f)
         val relativeX = centerX / frameWidth
 
         return when {
@@ -129,12 +139,8 @@ class ObjectDetectionAnalyzer(
         }
     }
 
-    private fun analyzeProximity(box: Rect): ObstacleProximity {
-        val frameArea = if (imageWidth > 0 && imageHeight > 0) {
-            (imageWidth * imageHeight).toFloat()
-        } else {
-            (480 * 640).toFloat()
-        }
+    private fun analyzeProximity(box: Rect, imgWidth: Int, imgHeight: Int): ObstacleProximity {
+        val frameArea = (imgWidth * imgHeight).toFloat().coerceAtLeast(1f)
         val boxArea = (box.width() * box.height()).toFloat()
         val ratio = boxArea / frameArea
 
@@ -147,9 +153,8 @@ class ObjectDetectionAnalyzer(
 
     companion object {
         private const val TAG = "ObjectDetectionAnalyzer"
-        private const val ANALYSIS_INTERVAL_MS = 500L
-        private const val NEAR_THRESHOLD = 0.15f
-        private const val MEDIUM_THRESHOLD = 0.05f
+        private const val NEAR_THRESHOLD = 0.12f
+        private const val MEDIUM_THRESHOLD = 0.04f
 
         private const val CATEGORY_FASHION_GOOD = 0
         private const val CATEGORY_FOOD = 1

@@ -1,21 +1,20 @@
 package com.keepereye.app
 
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.util.Log
+import android.util.Size
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.keepereye.app.databinding.ActivityObstacleBinding
+import com.keepereye.app.obstacle.DetectedObstacle
 import com.keepereye.app.obstacle.ObstacleAlertManager
 import com.keepereye.app.obstacle.ObjectDetectionAnalyzer
 import com.keepereye.app.tts.TextToSpeechManager
@@ -30,6 +29,7 @@ class ObstacleActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
 
     private var lastAlertMessage = ""
+    private var frameCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,8 +84,14 @@ class ObstacleActivity : AppCompatActivity() {
                     it.setSurfaceProvider(binding.previewView.surfaceProvider)
                 }
 
+            val resolutionSelector = ResolutionSelector.Builder()
+                .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
+                .build()
+
             val objectAnalyzer = ImageAnalysis.Builder()
+                .setResolutionSelector(resolutionSelector)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
                 .build()
                 .also {
                     it.setAnalyzer(cameraExecutor, createObjectAnalyzer())
@@ -101,6 +107,7 @@ class ObstacleActivity : AppCompatActivity() {
                     preview,
                     objectAnalyzer
                 )
+                Log.d(TAG, "Camera bound successfully")
             } catch (e: Exception) {
                 Log.e(TAG, "Camera binding failed", e)
             }
@@ -108,13 +115,18 @@ class ObstacleActivity : AppCompatActivity() {
     }
 
     private fun createObjectAnalyzer(): ObjectDetectionAnalyzer {
-        return ObjectDetectionAnalyzer { obstacles ->
+        return ObjectDetectionAnalyzer { obstacles, imageSize ->
+            frameCount++
             runOnUiThread {
-                binding.objectOverlay.setObstacles(obstacles)
+                binding.objectOverlay.setObstacles(obstacles, imageSize)
 
                 if (obstacles.isNotEmpty()) {
                     binding.tvNoObstacle.visibility = View.GONE
-                    val mostImportant = obstacles.first()
+
+                    val sorted = obstacles.sortedByDescending {
+                        it.boundingBox.width() * it.boundingBox.height()
+                    }
+                    val mostImportant = sorted.first()
                     val alertMsg = mostImportant.buildAlertMessage()
                     binding.tvDetectedObstacle.text = alertMsg
                     binding.tvDetectedObstacle.visibility = View.VISIBLE
@@ -124,11 +136,12 @@ class ObstacleActivity : AppCompatActivity() {
                     binding.tvObstacleCount.visibility = View.VISIBLE
                     lastAlertMessage = alertMsg
 
-                    obstacleAlertManager.processObstacles(obstacles, false)
+                    obstacleAlertManager.processObstacles(sorted, false)
                 } else {
-                    binding.tvNoObstacle.visibility = View.VISIBLE
                     binding.tvDetectedObstacle.visibility = View.GONE
                     binding.tvObstacleCount.visibility = View.GONE
+                    binding.tvNoObstacle.visibility = View.VISIBLE
+                    binding.tvNoObstacle.text = getString(R.string.scanning_obstacles)
                 }
             }
         }

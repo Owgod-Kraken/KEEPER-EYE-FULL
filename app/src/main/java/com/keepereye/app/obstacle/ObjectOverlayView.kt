@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Size
 import android.view.View
 
 class ObjectOverlayView @JvmOverloads constructor(
@@ -15,6 +16,7 @@ class ObjectOverlayView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private var obstacles: List<DetectedObstacle> = emptyList()
+    private var sourceSize: Size = Size(480, 640)
 
     private val nearPaint = Paint().apply {
         color = Color.parseColor("#FFEF5350")
@@ -68,18 +70,22 @@ class ObjectOverlayView @JvmOverloads constructor(
         isAntiAlias = true
     }
 
-    fun setObstacles(detectedObstacles: List<DetectedObstacle>) {
+    fun setObstacles(detectedObstacles: List<DetectedObstacle>, imageSize: Size) {
         obstacles = detectedObstacles
+        sourceSize = imageSize
         invalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        if (obstacles.isEmpty() || width == 0 || height == 0) return
+
+        val scaleX = width.toFloat() / sourceSize.width.toFloat()
+        val scaleY = height.toFloat() / sourceSize.height.toFloat()
+
         for (obstacle in obstacles) {
             val box = obstacle.boundingBox
-            val scaleX = width.toFloat() / PREVIEW_WIDTH
-            val scaleY = height.toFloat() / PREVIEW_HEIGHT
 
             val scaledRect = RectF(
                 box.left * scaleX,
@@ -111,10 +117,5 @@ class ObjectOverlayView @JvmOverloads constructor(
                 canvas.drawText(label, labelX, labelY, labelPaint)
             }
         }
-    }
-
-    companion object {
-        private const val PREVIEW_WIDTH = 480f
-        private const val PREVIEW_HEIGHT = 640f
     }
 }
