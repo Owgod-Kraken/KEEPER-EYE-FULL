@@ -15,13 +15,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var ttsManager: TextToSpeechManager
-    private var pendingAssistMode = false
+    private var pendingTarget: Class<*>? = null
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            navigateToScan(pendingAssistMode)
+            pendingTarget?.let { navigateTo(it) }
         } else {
             Toast.makeText(
                 this,
@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
             ).show()
             ttsManager.speak(getString(R.string.camera_permission_denied))
         }
+        pendingTarget = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,13 +45,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.btnStartScan.setOnClickListener {
-            pendingAssistMode = false
-            checkCameraPermissionAndStart()
+            checkCameraPermissionAndStart(ScanActivity::class.java)
         }
 
-        binding.btnAssistMode.setOnClickListener {
-            pendingAssistMode = true
-            checkCameraPermissionAndStart()
+        binding.btnObstacles.setOnClickListener {
+            checkCameraPermissionAndStart(ObstacleActivity::class.java)
         }
 
         binding.btnHistory.setOnClickListener {
@@ -58,29 +57,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnStartScan.contentDescription = getString(R.string.start_scan_description)
-        binding.btnAssistMode.contentDescription = getString(R.string.assist_mode_description)
+        binding.btnObstacles.contentDescription = getString(R.string.obstacle_detector_description)
         binding.btnHistory.contentDescription = getString(R.string.history_description)
     }
 
-    private fun checkCameraPermissionAndStart() {
+    private fun checkCameraPermissionAndStart(target: Class<*>) {
         when {
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
-                navigateToScan(pendingAssistMode)
+                navigateTo(target)
             }
             else -> {
+                pendingTarget = target
                 cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
 
-    private fun navigateToScan(assistMode: Boolean) {
-        val intent = Intent(this, ScanActivity::class.java).apply {
-            putExtra(ScanActivity.EXTRA_ASSIST_MODE, assistMode)
-        }
-        startActivity(intent)
+    private fun navigateTo(target: Class<*>) {
+        startActivity(Intent(this, target))
     }
 
     override fun onDestroy() {
