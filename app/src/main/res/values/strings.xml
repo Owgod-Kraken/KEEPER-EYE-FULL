@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">KEEPER EYE</string>
-    <string name="app_subtitle">Asistente visual con OCR y voz</string>
-    <string name="app_logo_description">Logo de KEEPER EYE</string>
+    <string name="app_name">Keeper-Eye</string>
+    <string name="app_subtitle">Guía segura en cada paso</string>
+    <string name="app_logo_description">Logo de Keeper-Eye</string>
 
     <string name="start_scan">Iniciar Escaneo</string>
     <string name="start_scan_description">Abrir cámara para detectar texto</string>

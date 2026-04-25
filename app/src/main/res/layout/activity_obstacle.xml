@@ -49,7 +49,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:text="@string/obstacle_detector_title"
-        android:textColor="@color/accent_orange"
+        android:textColor="@color/accent_cyan"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +108,7 @@
                 android:id="@+id/tvDetectedObstacle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/accent_orange"
+                android:textColor="@color/accent_cyan"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:visibility="gone"
@@ -132,7 +132,7 @@
                 android:textColor="@color/background_dark"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:backgroundTint="@color/accent_orange"
+                app:backgroundTint="@color/accent_cyan"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_replay"
                 app:iconGravity="textStart"
@@ -180,8 +180,8 @@
                 android:layout_weight="1"
                 android:max="100"
                 android:progress="33"
-                android:progressTint="@color/accent_orange"
-                android:thumbTint="@color/accent_orange" />
+                android:progressTint="@color/accent_cyan"
+                android:thumbTint="@color/accent_cyan" />
         </LinearLayout>
 
     </LinearLayout>

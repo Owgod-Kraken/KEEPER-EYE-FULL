@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="@string/tap_to_listen"
-            android:textColor="@color/accent_green"
+            android:textColor="@color/accent_light_blue"
             android:textSize="13sp" />
 
     </LinearLayout>

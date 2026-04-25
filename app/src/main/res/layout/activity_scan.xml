@@ -49,7 +49,7 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:text="@string/ocr_title"
-        android:textColor="@color/accent_green"
+        android:textColor="@color/accent_light_blue"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +90,7 @@
                 android:id="@+id/tvDetectedText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/accent_green"
+                android:textColor="@color/accent_light_blue"
                 android:textSize="16sp"
                 android:visibility="gone"
                 tools:text="Texto detectado aquí"
@@ -113,7 +113,7 @@
                 android:textColor="@color/background_dark"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:backgroundTint="@color/accent_green"
+                app:backgroundTint="@color/accent_blue"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_replay"
                 app:iconGravity="textStart"
@@ -161,8 +161,8 @@
                 android:layout_weight="1"
                 android:max="100"
                 android:progress="33"
-                android:progressTint="@color/accent_green"
-                android:thumbTint="@color/accent_green" />
+                android:progressTint="@color/accent_light_blue"
+                android:thumbTint="@color/accent_light_blue" />
         </LinearLayout>
 
     </LinearLayout>
