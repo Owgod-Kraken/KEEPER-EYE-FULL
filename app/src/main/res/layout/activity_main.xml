@@ -63,12 +63,34 @@
         app:iconGravity="textStart"
         app:iconSize="36dp"
         app:iconTint="@color/background_dark"
-        app:layout_constraintBottom_toTopOf="@id/btnHistory"
+        app:layout_constraintBottom_toTopOf="@id/btnAssistMode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.45" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAssistMode"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/assist_mode"
+        android:textColor="@color/background_dark"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        app:backgroundTint="@color/accent_orange"
+        app:cornerRadius="16dp"
+        app:icon="@drawable/ic_assist"
+        app:iconGravity="textStart"
+        app:iconSize="32dp"
+        app:iconTint="@color/background_dark"
+        app:layout_constraintBottom_toTopOf="@id/btnHistory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnStartScan" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnHistory"
@@ -76,7 +98,7 @@
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="@string/history"
         android:textColor="@color/text_primary"
         android:textSize="20sp"
@@ -90,7 +112,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnStartScan"
+        app:layout_constraintTop_toBottomOf="@id/btnAssistMode"
         app:layout_constraintVertical_bias="0.3" />
 
     <TextView

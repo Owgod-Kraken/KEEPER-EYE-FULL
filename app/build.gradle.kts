@@ -69,6 +69,9 @@ dependencies {
     // ML Kit Text Recognition (on-device)
     implementation("com.google.mlkit:text-recognition:16.0.0")
 
+    // ML Kit Object Detection (on-device)
+    implementation("com.google.mlkit:object-detection:17.0.1")
+
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 

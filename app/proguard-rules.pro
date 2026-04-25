@@ -8,3 +8,4 @@
 
 # Keep app models
 -keep class com.keepereye.app.history.** { *; }
+-keep class com.keepereye.app.obstacle.** { *; }

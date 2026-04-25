@@ -15,12 +15,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var ttsManager: TextToSpeechManager
+    private var pendingAssistMode = false
 
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            navigateToScan()
+            navigateToScan(pendingAssistMode)
         } else {
             Toast.makeText(
                 this,
@@ -43,6 +44,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.btnStartScan.setOnClickListener {
+            pendingAssistMode = false
+            checkCameraPermissionAndStart()
+        }
+
+        binding.btnAssistMode.setOnClickListener {
+            pendingAssistMode = true
             checkCameraPermissionAndStart()
         }
 
@@ -51,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnStartScan.contentDescription = getString(R.string.start_scan_description)
+        binding.btnAssistMode.contentDescription = getString(R.string.assist_mode_description)
         binding.btnHistory.contentDescription = getString(R.string.history_description)
     }
 
@@ -60,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 this,
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
-                navigateToScan()
+                navigateToScan(pendingAssistMode)
             }
             else -> {
                 cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
@@ -68,8 +76,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToScan() {
-        startActivity(Intent(this, ScanActivity::class.java))
+    private fun navigateToScan(assistMode: Boolean) {
+        val intent = Intent(this, ScanActivity::class.java).apply {
+            putExtra(ScanActivity.EXTRA_ASSIST_MODE, assistMode)
+        }
+        startActivity(intent)
     }
 
     override fun onDestroy() {
