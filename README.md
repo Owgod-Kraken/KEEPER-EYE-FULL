@@ -1,87 +1,62 @@
-# KEEPER EYE
+# Keeper-Eye
 
-Aplicacion movil Android nativa enfocada en accesibilidad para personas con discapacidad visual. Utiliza OCR en tiempo real y lectura por voz, funcionando completamente offline sin necesidad de backend.
+**Guia segura en cada paso**
 
-## Caracteristicas
+App multiplataforma (Android + iOS) de accesibilidad para personas con discapacidad visual. Detecta texto y obstaculos con la camara en tiempo real, con alertas por voz y vibracion. Todo funciona offline sin backend.
 
-- **OCR en tiempo real** - Deteccion de texto con la camara usando Google ML Kit (on-device)
-- **Lectura por voz** - Reproduccion automatica del texto detectado usando Android TTS
-- **Deteccion de palabras clave** - Prioriza la lectura de palabras como "peligro", "alto", "salida"
-- **Accesibilidad** - Botones grandes, alto contraste, vibracion al detectar texto
-- **Historial** - Guarda los ultimos textos detectados en SQLite local
-- **100% Offline** - Todo el procesamiento es local, sin envio de datos a internet
-- **Privacidad** - Ningun dato sale del dispositivo
+## Funcionalidades
 
-## Stack Tecnologico
+### Escaneo OCR
+- OCR en tiempo real con Google ML Kit Text Recognition (on-device)
+- Lectura por voz automatica con Flutter TTS
+- Bounding boxes visuales sobre el texto detectado
+- Deteccion de palabras clave (peligro, alto, salida, emergencia) con alertas prioritarias
+- Control de velocidad de voz (0.5x - 2.0x)
+- Vibracion tactil al detectar texto
+- Historial de textos en SQLite local
+
+### Detector de Obstaculos
+- ML Kit Object Detection (on-device) en tiempo real
+- Analisis de posicion: izquierda / centro / derecha
+- Estimacion de proximidad: cerca / media / lejos
+- Alertas por voz: "Obstaculo al frente, muy cerca"
+- Vibracion variable por distancia
+- Bounding boxes con colores: rojo (cerca), naranja (medio), azul (lejos)
+
+### Accesibilidad
+- UI de alto contraste con tema oscuro
+- Botones grandes con iconos
+- Vibracion como feedback tactil
+
+## Stack
 
 | Componente | Tecnologia |
 |---|---|
-| Lenguaje | Kotlin |
-| UI | Material Design 3 |
-| Camara | CameraX |
-| OCR | Google ML Kit Text Recognition (on-device) |
-| Voz | Android TextToSpeech API |
-| Base de datos | SQLite |
-| Min SDK | API 24 (Android 7.0) |
-| Target SDK | API 34 (Android 14) |
+| Framework | Flutter 3.x |
+| Lenguaje | Dart |
+| OCR | google_mlkit_text_recognition |
+| Obstaculos | google_mlkit_object_detection |
+| TTS | flutter_tts |
+| BD | sqflite |
+| Camara | camera (CameraX / AVFoundation) |
 
-## Estructura del Proyecto
+## Build
 
-```
-app/src/main/
-├── java/com/keepereye/app/
-│   ├── MainActivity.kt          # Pantalla principal
-│   ├── ScanActivity.kt          # Camara + OCR + TTS
-│   ├── HistoryActivity.kt       # Historial de textos
-│   ├── ocr/
-│   │   ├── TextRecognitionAnalyzer.kt  # Procesamiento ML Kit
-│   │   └── TextOverlayView.kt         # Bounding boxes
-│   ├── tts/
-│   │   └── TextToSpeechManager.kt     # Gestion de voz
-│   ├── ai/
-│   │   └── KeywordDetector.kt         # Deteccion de palabras clave
-│   └── history/
-│       ├── HistoryEntry.kt            # Modelo de datos
-│       ├── HistoryDatabaseHelper.kt   # SQLite helper
-│       ├── HistoryRepository.kt       # Repositorio
-│       └── HistoryAdapter.kt          # RecyclerView adapter
-└── res/
-    ├── layout/         # Layouts XML
-    ├── values/         # Strings, colors, themes
-    └── drawable/       # Iconos vectoriales
-```
-
-## Compilacion
-
-### Requisitos
-- Android Studio Hedgehog (2023.1.1) o superior
-- JDK 17
-- Android SDK 34
-
-### Generar APK Debug
+### Android (APK)
 ```bash
-./gradlew assembleDebug
+flutter pub get
+flutter build apk --debug
+# APK en: build/app/outputs/flutter-apk/app-debug.apk
 ```
-El APK se generara en `app/build/outputs/apk/debug/app-debug.apk`
 
-### Generar APK Release
+### iOS (requiere Mac con Xcode)
 ```bash
-./gradlew assembleRelease
+flutter pub get
+cd ios && pod install && cd ..
+flutter build ios
 ```
 
-## Permisos
-
-- `CAMERA` - Para escaneo OCR en tiempo real
-- `VIBRATE` - Para feedback tactil al detectar texto
-
-## Palabras Clave Detectadas
-
-| Palabra | Prioridad | Tipo |
-|---|---|---|
-| peligro, danger, cuidado, emergencia | CRITICA | Alerta inmediata con vibracion larga |
-| alto, stop, pare, no pasar, prohibido, precaucion | ALTA | Alerta con vibracion |
-| salida, exit, entrada, escalera, ascensor, bano | MEDIA | Aviso informativo |
-
-## Licencia
-
-Proyecto privado - Todos los derechos reservados.
+## Requisitos
+- Flutter SDK 3.x
+- Android: Min SDK 24 (Android 7.0)
+- iOS: Min iOS 12.0
