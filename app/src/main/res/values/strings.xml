@@ -37,12 +37,19 @@
     <!-- Voice -->
     <string name="welcome_message">Bienvenido a KEEPER-EYE</string>
     <string name="voice_menu">Di 1 para detectar obstáculos o di 2 para lectura OCR</string>
+    <string name="voice_menu_full">Di uno para detectar obstáculos. Di dos para lectura OCR. Di salir para cerrar.</string>
+    <string name="voice_menu_short">Di uno para obstáculos o dos para lectura.</string>
     <string name="obstacle_mode_activated">Modo detección de obstáculos activado</string>
     <string name="ocr_mode_activated">Modo lectura OCR activado</string>
+    <string name="obstacle_mode_activated_voice">Modo detección de obstáculos activado. Di regresar para volver al menú o salir para cerrar.</string>
+    <string name="ocr_mode_activated_voice">Modo lectura OCR activado. Di regresar para volver al menú o salir para cerrar.</string>
     <string name="listening">Escuchando…</string>
     <string name="voice_not_recognized">No se reconoció el comando. Intenta de nuevo.</string>
     <string name="tap_to_start">Toca para activar</string>
     <string name="voice_indicator">Indicador de voz</string>
+    <string name="returning_to_menu">Regresando al menú principal</string>
+    <string name="closing_mode">Cerrando modo activo</string>
+    <string name="goodbye_message">Hasta luego</string>
 
     <!-- Obstacle alerts -->
     <string name="obstacle_front">Obstáculo al frente</string>

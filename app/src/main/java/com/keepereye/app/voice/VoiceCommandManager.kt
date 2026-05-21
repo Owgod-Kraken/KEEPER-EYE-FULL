@@ -3,6 +3,8 @@ package com.keepereye.app.voice
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -17,15 +19,47 @@ class VoiceCommandManager(
 
     private var speechRecognizer: SpeechRecognizer? = null
     private var isListening = false
+    private var isContinuous = false
+    private var isPaused = false
+    private val handler = Handler(Looper.getMainLooper())
+    private var restartCount = 0
 
     enum class VoiceCommand {
-        OBSTACLES, OCR, UNKNOWN
+        OBSTACLES, OCR, GO_BACK, EXIT, UNKNOWN
+    }
+
+    fun startContinuousListening() {
+        isContinuous = true
+        isPaused = false
+        restartCount = 0
+        startListeningInternal()
     }
 
     fun startListening() {
+        isContinuous = false
+        isPaused = false
+        startListeningInternal()
+    }
+
+    fun pause() {
+        isPaused = true
+        stopListening()
+    }
+
+    fun resume() {
+        isPaused = false
+        if (isContinuous) {
+            restartCount = 0
+            startListeningInternal()
+        }
+    }
+
+    private fun startListeningInternal() {
+        if (isPaused) return
+
         if (!SpeechRecognizer.isRecognitionAvailable(context)) {
             Log.e(TAG, "Speech recognition not available")
-            onCommand(VoiceCommand.UNKNOWN)
+            scheduleRestart()
             return
         }
 
@@ -35,6 +69,7 @@ class VoiceCommandManager(
             setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
                     isListening = true
+                    restartCount = 0
                     onListeningStateChanged(true)
                 }
 
@@ -50,8 +85,37 @@ class VoiceCommandManager(
                 override fun onError(error: Int) {
                     isListening = false
                     onListeningStateChanged(false)
-                    Log.e(TAG, "Recognition error: $error")
-                    onCommand(VoiceCommand.UNKNOWN)
+                    Log.w(TAG, "Recognition error: $error")
+
+                    when (error) {
+                        SpeechRecognizer.ERROR_NO_MATCH,
+                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
+                            if (isContinuous && !isPaused) {
+                                scheduleRestart()
+                            } else {
+                                onCommand(VoiceCommand.UNKNOWN)
+                            }
+                        }
+                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> {
+                            handler.postDelayed({
+                                if (isContinuous && !isPaused) {
+                                    release()
+                                    scheduleRestart()
+                                }
+                            }, 500)
+                        }
+                        else -> {
+                            if (isContinuous && !isPaused) {
+                                restartCount++
+                                val delay = (restartCount * 500L).coerceAtMost(3000L)
+                                handler.postDelayed({
+                                    if (!isPaused) startListeningInternal()
+                                }, delay)
+                            } else {
+                                onCommand(VoiceCommand.UNKNOWN)
+                            }
+                        }
+                    }
                 }
 
                 override fun onResults(results: Bundle?) {
@@ -62,7 +126,14 @@ class VoiceCommandManager(
                         SpeechRecognizer.RESULTS_RECOGNITION
                     )
                     val command = parseCommand(matches)
-                    onCommand(command)
+
+                    if (command != VoiceCommand.UNKNOWN) {
+                        onCommand(command)
+                    } else if (isContinuous && !isPaused) {
+                        scheduleRestart()
+                    } else {
+                        onCommand(command)
+                    }
                 }
 
                 override fun onPartialResults(partialResults: Bundle?) {}
@@ -77,10 +148,25 @@ class VoiceCommandManager(
             )
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale("es", "ES").toLanguageTag())
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
-            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 1000L)
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 1500L)
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2000L)
         }
 
-        speechRecognizer?.startListening(intent)
+        try {
+            speechRecognizer?.startListening(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start listening", e)
+            if (isContinuous && !isPaused) scheduleRestart()
+        }
+    }
+
+    private fun scheduleRestart() {
+        if (isPaused) return
+        handler.postDelayed({
+            if (isContinuous && !isPaused) {
+                startListeningInternal()
+            }
+        }, 300)
     }
 
     private fun parseCommand(matches: List<String>?): VoiceCommand {
@@ -88,12 +174,29 @@ class VoiceCommandManager(
 
         for (match in matches) {
             val lower = match.lowercase().trim()
+
+            if (lower.contains("regresar") || lower.contains("volver") ||
+                lower.contains("atrás") || lower.contains("atras") ||
+                lower.contains("menú") || lower.contains("menu") ||
+                lower.contains("inicio") || lower.contains("principal")
+            ) {
+                return VoiceCommand.GO_BACK
+            }
+
+            if (lower.contains("salir") || lower.contains("cerrar") ||
+                lower.contains("parar") || lower.contains("detener") ||
+                lower.contains("terminar")
+            ) {
+                return VoiceCommand.EXIT
+            }
+
             if (lower.contains("1") || lower.contains("uno") ||
                 lower.contains("obstáculo") || lower.contains("obstaculo") ||
                 lower.contains("detección") || lower.contains("deteccion")
             ) {
                 return VoiceCommand.OBSTACLES
             }
+
             if (lower.contains("2") || lower.contains("dos") ||
                 lower.contains("ocr") || lower.contains("lectura") ||
                 lower.contains("leer") || lower.contains("texto")
@@ -105,13 +208,22 @@ class VoiceCommandManager(
     }
 
     fun stopListening() {
-        speechRecognizer?.stopListening()
+        handler.removeCallbacksAndMessages(null)
+        try {
+            speechRecognizer?.stopListening()
+        } catch (_: Exception) {}
         isListening = false
         onListeningStateChanged(false)
     }
 
     fun release() {
-        speechRecognizer?.destroy()
+        handler.removeCallbacksAndMessages(null)
+        isContinuous = false
+        isPaused = false
+        try {
+            speechRecognizer?.cancel()
+            speechRecognizer?.destroy()
+        } catch (_: Exception) {}
         speechRecognizer = null
         isListening = false
     }
