@@ -39,7 +39,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Title badge -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -49,13 +48,12 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         android:text="@string/obstacle_detector_title"
-        android:textColor="@color/accent_cyan"
+        android:textColor="@color/accent_violet"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Obstacle count -->
     <TextView
         android:id="@+id/tvObstacleCount"
         android:layout_width="wrap_content"
@@ -108,7 +106,7 @@
                 android:id="@+id/tvDetectedObstacle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/accent_cyan"
+                android:textColor="@color/accent_violet"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:visibility="gone"
@@ -125,32 +123,32 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRepeat"
                 android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_height="68dp"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:text="@string/repeat"
-                android:textColor="@color/background_dark"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:backgroundTint="@color/accent_cyan"
-                app:cornerRadius="12dp"
+                app:backgroundTint="@color/accent_violet"
+                app:cornerRadius="16dp"
                 app:icon="@drawable/ic_replay"
                 app:iconGravity="textStart"
                 app:iconSize="24dp"
-                app:iconTint="@color/background_dark" />
+                app:iconTint="@color/text_primary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStop"
                 android:layout_width="0dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
+                android:layout_height="68dp"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:text="@string/stop"
                 android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:backgroundTint="@color/button_red"
-                app:cornerRadius="12dp"
+                app:cornerRadius="16dp"
                 app:icon="@drawable/ic_stop"
                 app:iconGravity="textStart"
                 app:iconSize="24dp"
@@ -180,8 +178,8 @@
                 android:layout_weight="1"
                 android:max="100"
                 android:progress="33"
-                android:progressTint="@color/accent_cyan"
-                android:thumbTint="@color/accent_cyan" />
+                android:progressTint="@color/accent_violet"
+                android:thumbTint="@color/accent_violet" />
         </LinearLayout>
 
     </LinearLayout>

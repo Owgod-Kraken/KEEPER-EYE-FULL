@@ -18,14 +18,14 @@ class TextOverlayView @JvmOverloads constructor(
     private var textBlocks: List<Text.TextBlock> = emptyList()
 
     private val boundingBoxPaint = Paint().apply {
-        color = Color.parseColor("#00E676")
+        color = Color.parseColor("#A78BFA")
         style = Paint.Style.STROKE
         strokeWidth = 4f
         isAntiAlias = true
     }
 
     private val backgroundPaint = Paint().apply {
-        color = Color.parseColor("#4000E676")
+        color = Color.parseColor("#40A78BFA")
         style = Paint.Style.FILL
         isAntiAlias = true
     }

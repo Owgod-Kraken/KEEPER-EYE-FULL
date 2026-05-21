@@ -19,40 +19,40 @@ class ObjectOverlayView @JvmOverloads constructor(
     private var sourceSize: Size = Size(480, 640)
 
     private val nearPaint = Paint().apply {
-        color = Color.parseColor("#FFEF5350")
+        color = Color.parseColor("#FFEF4444")
         style = Paint.Style.STROKE
         strokeWidth = 6f
         isAntiAlias = true
     }
 
     private val nearFillPaint = Paint().apply {
-        color = Color.parseColor("#40EF5350")
+        color = Color.parseColor("#40EF4444")
         style = Paint.Style.FILL
         isAntiAlias = true
     }
 
     private val mediumPaint = Paint().apply {
-        color = Color.parseColor("#FFFFB74D")
+        color = Color.parseColor("#FFFBBF24")
         style = Paint.Style.STROKE
         strokeWidth = 4f
         isAntiAlias = true
     }
 
     private val mediumFillPaint = Paint().apply {
-        color = Color.parseColor("#30FFB74D")
+        color = Color.parseColor("#30FBBF24")
         style = Paint.Style.FILL
         isAntiAlias = true
     }
 
     private val farPaint = Paint().apply {
-        color = Color.parseColor("#FF42A5F5")
+        color = Color.parseColor("#FFA78BFA")
         style = Paint.Style.STROKE
         strokeWidth = 3f
         isAntiAlias = true
     }
 
     private val farFillPaint = Paint().apply {
-        color = Color.parseColor("#2042A5F5")
+        color = Color.parseColor("#20A78BFA")
         style = Paint.Style.FILL
         isAntiAlias = true
     }

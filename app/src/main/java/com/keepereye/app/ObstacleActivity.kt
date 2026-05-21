@@ -1,8 +1,12 @@
 package com.keepereye.app
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
-import android.util.Size
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -14,10 +18,10 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.keepereye.app.databinding.ActivityObstacleBinding
-import com.keepereye.app.obstacle.DetectedObstacle
 import com.keepereye.app.obstacle.ObstacleAlertManager
 import com.keepereye.app.obstacle.ObjectDetectionAnalyzer
 import com.keepereye.app.tts.TextToSpeechManager
+import com.keepereye.app.voice.VoiceCommandManager
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -27,35 +31,43 @@ class ObstacleActivity : AppCompatActivity() {
     private lateinit var ttsManager: TextToSpeechManager
     private lateinit var obstacleAlertManager: ObstacleAlertManager
     private lateinit var cameraExecutor: ExecutorService
+    private var voiceManager: VoiceCommandManager? = null
 
     private var lastAlertMessage = ""
-    private var frameCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityObstacleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ttsManager = TextToSpeechManager(this)
+        ttsManager = TextToSpeechManager(this) {
+            runOnUiThread {
+                ttsManager.speak(getString(R.string.obstacle_mode_activated_voice))
+            }
+        }
         obstacleAlertManager = ObstacleAlertManager(this, ttsManager)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         setupUI()
         startCamera()
+        startVoiceCommands()
     }
 
     private fun setupUI() {
         binding.btnBack.setOnClickListener {
+            hapticFeedback()
             finish()
         }
 
         binding.btnRepeat.setOnClickListener {
+            hapticFeedback()
             if (lastAlertMessage.isNotEmpty()) {
                 ttsManager.speak(lastAlertMessage)
             }
         }
 
         binding.btnStop.setOnClickListener {
+            hapticFeedback()
             ttsManager.stop()
         }
 
@@ -71,6 +83,37 @@ class ObstacleActivity : AppCompatActivity() {
         })
 
         binding.speedSeekBar.progress = 33
+    }
+
+    private fun startVoiceCommands() {
+        voiceManager = VoiceCommandManager(
+            context = this,
+            onCommand = { command ->
+                runOnUiThread {
+                    when (command) {
+                        VoiceCommandManager.VoiceCommand.GO_BACK -> {
+                            hapticFeedback()
+                            ttsManager.speakAndThen(getString(R.string.returning_to_menu)) {
+                                runOnUiThread { finish() }
+                            }
+                        }
+                        VoiceCommandManager.VoiceCommand.EXIT -> {
+                            hapticFeedback()
+                            ttsManager.speakAndThen(getString(R.string.closing_mode)) {
+                                runOnUiThread { finish() }
+                            }
+                        }
+                        VoiceCommandManager.VoiceCommand.OCR -> {
+                            hapticFeedback()
+                            ttsManager.speak(getString(R.string.ocr_mode_activated))
+                        }
+                        else -> { }
+                    }
+                }
+            },
+            onListeningStateChanged = { }
+        )
+        voiceManager?.startContinuousListening()
     }
 
     private fun startCamera() {
@@ -107,7 +150,6 @@ class ObstacleActivity : AppCompatActivity() {
                     preview,
                     objectAnalyzer
                 )
-                Log.d(TAG, "Camera bound successfully")
             } catch (e: Exception) {
                 Log.e(TAG, "Camera binding failed", e)
             }
@@ -116,7 +158,6 @@ class ObstacleActivity : AppCompatActivity() {
 
     private fun createObjectAnalyzer(): ObjectDetectionAnalyzer {
         return ObjectDetectionAnalyzer { obstacles, imageSize ->
-            frameCount++
             runOnUiThread {
                 binding.objectOverlay.setObstacles(obstacles, imageSize)
 
@@ -147,8 +188,30 @@ class ObstacleActivity : AppCompatActivity() {
         }
     }
 
+    private fun hapticFeedback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator.vibrate(
+                VibrationEffect.createOneShot(40L, VibrationEffect.DEFAULT_AMPLITUDE)
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(40L, VibrationEffect.DEFAULT_AMPLITUDE)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40L)
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        voiceManager?.release()
         cameraExecutor.shutdown()
         ttsManager.shutdown()
     }
