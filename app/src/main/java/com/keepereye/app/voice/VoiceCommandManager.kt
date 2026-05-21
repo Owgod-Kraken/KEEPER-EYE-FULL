@@ -172,36 +172,55 @@ class VoiceCommandManager(
     private fun parseCommand(matches: List<String>?): VoiceCommand {
         if (matches.isNullOrEmpty()) return VoiceCommand.UNKNOWN
 
+        Log.d(TAG, "Speech matches: $matches")
+
         for (match in matches) {
             val lower = match.lowercase().trim()
+            val words = lower.split("\\s+".toRegex())
 
+            // Priority 1: exact number/word matches for modules
+            if (words.any { it == "1" || it == "uno" }) {
+                return VoiceCommand.OBSTACLES
+            }
+            if (words.any { it == "2" || it == "dos" || it == "do" || it == "segundo" }) {
+                return VoiceCommand.OCR
+            }
+
+            // Priority 2: navigation commands
             if (lower.contains("regresar") || lower.contains("volver") ||
                 lower.contains("atrás") || lower.contains("atras") ||
-                lower.contains("menú") || lower.contains("menu") ||
-                lower.contains("inicio") || lower.contains("principal")
+                lower.contains("menú") || lower.contains("menu")
             ) {
                 return VoiceCommand.GO_BACK
             }
 
             if (lower.contains("salir") || lower.contains("cerrar") ||
-                lower.contains("parar") || lower.contains("detener") ||
                 lower.contains("terminar")
             ) {
                 return VoiceCommand.EXIT
             }
 
-            if (lower.contains("1") || lower.contains("uno") ||
-                lower.contains("obstáculo") || lower.contains("obstaculo") ||
-                lower.contains("detección") || lower.contains("deteccion")
+            // Priority 3: keyword matches for modules
+            if (lower.contains("obstáculo") || lower.contains("obstaculo") ||
+                lower.contains("detección") || lower.contains("deteccion") ||
+                lower.contains("obstacle")
             ) {
                 return VoiceCommand.OBSTACLES
             }
 
-            if (lower.contains("2") || lower.contains("dos") ||
-                lower.contains("ocr") || lower.contains("lectura") ||
-                lower.contains("leer") || lower.contains("texto")
+            if (lower.contains("ocr") || lower.contains("lectura") ||
+                lower.contains("leer") || lower.contains("texto") ||
+                lower.contains("escanear") || lower.contains("escaneo")
             ) {
                 return VoiceCommand.OCR
+            }
+
+            // Priority 4: fuzzy digit matching anywhere in text
+            if (lower.contains("2")) {
+                return VoiceCommand.OCR
+            }
+            if (lower.contains("1")) {
+                return VoiceCommand.OBSTACLES
             }
         }
         return VoiceCommand.UNKNOWN
