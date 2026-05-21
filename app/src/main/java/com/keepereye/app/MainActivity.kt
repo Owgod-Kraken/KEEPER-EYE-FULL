@@ -10,7 +10,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -23,29 +22,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var ttsManager: TextToSpeechManager
     private var voiceManager: VoiceCommandManager? = null
-    private var pendingTarget: Class<*>? = null
     private var hasGreeted = false
+    private var permissionsReady = false
 
-    private val cameraPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            pendingTarget?.let { navigateTo(it) }
-        } else {
-            Toast.makeText(this, getString(R.string.camera_permission_denied), Toast.LENGTH_LONG).show()
-            ttsManager.speak(getString(R.string.camera_permission_denied))
-        }
-        pendingTarget = null
-    }
-
-    private val audioPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            startVoiceInteraction()
-        } else {
-            Toast.makeText(this, getString(R.string.audio_permission_denied), Toast.LENGTH_LONG).show()
-        }
+    private val allPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { _ ->
+        permissionsReady = true
+        onPermissionsReady()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         ttsManager = TextToSpeechManager(this) {
             runOnUiThread {
-                if (!hasGreeted) {
+                if (permissionsReady && !hasGreeted) {
                     hasGreeted = true
                     startWelcomeSequence()
                 }
@@ -64,20 +48,49 @@ class MainActivity : AppCompatActivity() {
 
         setupUI()
         setupAccessibility()
+        requestAllPermissions()
+    }
+
+    private fun requestAllPermissions() {
+        val needed = mutableListOf<String>()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            needed.add(Manifest.permission.CAMERA)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            needed.add(Manifest.permission.RECORD_AUDIO)
+        }
+
+        if (needed.isEmpty()) {
+            permissionsReady = true
+            onPermissionsReady()
+        } else {
+            allPermissionsLauncher.launch(needed.toTypedArray())
+        }
+    }
+
+    private fun onPermissionsReady() {
+        if (!hasGreeted) {
+            hasGreeted = true
+            startWelcomeSequence()
+        }
     }
 
     private fun setupUI() {
         binding.btnStartScan.setOnClickListener {
             hapticFeedback()
             ttsManager.speakAndThen(getString(R.string.ocr_mode_activated)) {
-                runOnUiThread { checkCameraPermissionAndStart(ScanActivity::class.java) }
+                runOnUiThread { navigateTo(ScanActivity::class.java) }
             }
         }
 
         binding.btnObstacles.setOnClickListener {
             hapticFeedback()
             ttsManager.speakAndThen(getString(R.string.obstacle_mode_activated)) {
-                runOnUiThread { checkCameraPermissionAndStart(ObstacleActivity::class.java) }
+                runOnUiThread { navigateTo(ObstacleActivity::class.java) }
             }
         }
 
@@ -88,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.fabVoice.setOnClickListener {
             hapticFeedback()
-            checkAudioPermissionAndListen()
+            startVoiceInteraction()
         }
 
         binding.btnStartScan.contentDescription = getString(R.string.start_scan_description)
@@ -107,21 +120,8 @@ class MainActivity : AppCompatActivity() {
         ttsManager.speakAndThen(getString(R.string.welcome_message)) {
             runOnUiThread {
                 ttsManager.speakAndThen(getString(R.string.voice_menu)) {
-                    runOnUiThread { checkAudioPermissionAndListen() }
+                    runOnUiThread { startVoiceInteraction() }
                 }
-            }
-        }
-    }
-
-    private fun checkAudioPermissionAndListen() {
-        when {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.RECORD_AUDIO
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                startVoiceInteraction()
-            }
-            else -> {
-                audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
         }
     }
@@ -149,13 +149,13 @@ class MainActivity : AppCompatActivity() {
             VoiceCommandManager.VoiceCommand.OBSTACLES -> {
                 hapticFeedback()
                 ttsManager.speakAndThen(getString(R.string.obstacle_mode_activated)) {
-                    runOnUiThread { checkCameraPermissionAndStart(ObstacleActivity::class.java) }
+                    runOnUiThread { navigateTo(ObstacleActivity::class.java) }
                 }
             }
             VoiceCommandManager.VoiceCommand.OCR -> {
                 hapticFeedback()
                 ttsManager.speakAndThen(getString(R.string.ocr_mode_activated)) {
-                    runOnUiThread { checkCameraPermissionAndStart(ScanActivity::class.java) }
+                    runOnUiThread { navigateTo(ScanActivity::class.java) }
                 }
             }
             VoiceCommandManager.VoiceCommand.UNKNOWN -> {
@@ -166,20 +166,6 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private fun checkCameraPermissionAndStart(target: Class<*>) {
-        when {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                navigateTo(target)
-            }
-            else -> {
-                pendingTarget = target
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
