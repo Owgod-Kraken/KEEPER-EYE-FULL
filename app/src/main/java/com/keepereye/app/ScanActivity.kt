@@ -38,6 +38,7 @@ class ScanActivity : AppCompatActivity() {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var lastSpokenText = ""
+    private var lastSpokenTime = 0L
     private var isProcessing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +46,11 @@ class ScanActivity : AppCompatActivity() {
         binding = ActivityScanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ttsManager = TextToSpeechManager(this)
+        ttsManager = TextToSpeechManager(this) {
+            runOnUiThread {
+                ttsManager.speak(getString(R.string.ocr_mode_activated))
+            }
+        }
         keywordDetector = KeywordDetector()
         historyRepository = HistoryRepository(this)
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -56,16 +61,19 @@ class ScanActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.btnRepeat.setOnClickListener {
+            hapticFeedback()
             if (lastSpokenText.isNotEmpty()) {
                 ttsManager.speak(lastSpokenText)
             }
         }
 
         binding.btnStop.setOnClickListener {
+            hapticFeedback()
             ttsManager.stop()
         }
 
         binding.btnBack.setOnClickListener {
+            hapticFeedback()
             finish()
         }
 
@@ -132,16 +140,23 @@ class ScanActivity : AppCompatActivity() {
                     binding.tvDetectedText.visibility = View.VISIBLE
                     binding.tvNoText.visibility = View.GONE
 
+                    val currentTime = System.currentTimeMillis()
                     val keywords = keywordDetector.detectKeywords(detectedText)
                     if (keywords.isNotEmpty()) {
                         val priorityText = keywordDetector.buildPriorityMessage(keywords)
                         if (priorityText != lastSpokenText) {
                             lastSpokenText = priorityText
+                            lastSpokenTime = currentTime
                             ttsManager.speakWithPriority(priorityText)
                             vibrateAlert()
                         }
-                    } else if (detectedText != lastSpokenText && detectedText.length > 3) {
+                    } else if (detectedText != lastSpokenText &&
+                        detectedText.length > 3 &&
+                        currentTime - lastSpokenTime > MIN_SPEAK_INTERVAL_MS &&
+                        !ttsManager.isSpeaking()
+                    ) {
                         lastSpokenText = detectedText
+                        lastSpokenTime = currentTime
                         ttsManager.speak(detectedText)
                         vibrateShort()
                     }
@@ -160,11 +175,15 @@ class ScanActivity : AppCompatActivity() {
     }
 
     private fun vibrateShort() {
-        triggerVibration(100L)
+        triggerVibration(80L)
     }
 
     private fun vibrateAlert() {
         triggerVibration(300L)
+    }
+
+    private fun hapticFeedback() {
+        triggerVibration(40L)
     }
 
     private fun triggerVibration(durationMs: Long) {
@@ -198,5 +217,6 @@ class ScanActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "ScanActivity"
+        private const val MIN_SPEAK_INTERVAL_MS = 2000L
     }
 }

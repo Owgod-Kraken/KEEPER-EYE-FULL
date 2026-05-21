@@ -1,8 +1,12 @@
 package com.keepereye.app
 
+import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
-import android.util.Size
 import android.view.View
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +18,6 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.keepereye.app.databinding.ActivityObstacleBinding
-import com.keepereye.app.obstacle.DetectedObstacle
 import com.keepereye.app.obstacle.ObstacleAlertManager
 import com.keepereye.app.obstacle.ObjectDetectionAnalyzer
 import com.keepereye.app.tts.TextToSpeechManager
@@ -36,7 +39,11 @@ class ObstacleActivity : AppCompatActivity() {
         binding = ActivityObstacleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ttsManager = TextToSpeechManager(this)
+        ttsManager = TextToSpeechManager(this) {
+            runOnUiThread {
+                ttsManager.speak(getString(R.string.obstacle_mode_activated))
+            }
+        }
         obstacleAlertManager = ObstacleAlertManager(this, ttsManager)
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -46,16 +53,19 @@ class ObstacleActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.btnBack.setOnClickListener {
+            hapticFeedback()
             finish()
         }
 
         binding.btnRepeat.setOnClickListener {
+            hapticFeedback()
             if (lastAlertMessage.isNotEmpty()) {
                 ttsManager.speak(lastAlertMessage)
             }
         }
 
         binding.btnStop.setOnClickListener {
+            hapticFeedback()
             ttsManager.stop()
         }
 
@@ -143,6 +153,27 @@ class ObstacleActivity : AppCompatActivity() {
                     binding.tvNoObstacle.visibility = View.VISIBLE
                     binding.tvNoObstacle.text = getString(R.string.scanning_obstacles)
                 }
+            }
+        }
+    }
+
+    private fun hapticFeedback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator.vibrate(
+                VibrationEffect.createOneShot(40L, VibrationEffect.DEFAULT_AMPLITUDE)
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(40L, VibrationEffect.DEFAULT_AMPLITUDE)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(40L)
             }
         }
     }
