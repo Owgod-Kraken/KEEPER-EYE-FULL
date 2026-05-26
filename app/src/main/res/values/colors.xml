@@ -71,4 +71,5 @@
     <color name="accent_light_blue">#FFB388FF</color>
     <color name="accent_orange">#FFFFB74D</color>
     <color name="button_red">#FFEF5350</color>
+    <color name="card_dark">#FF1E1835</color>
 </resources>
