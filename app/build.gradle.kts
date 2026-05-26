@@ -11,8 +11,8 @@ android {
         applicationId = "com.keepereye.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -55,8 +55,9 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
-    // Material Design
+    // Material Design 3
     implementation("com.google.android.material:material:1.11.0")
 
     // CameraX
@@ -71,6 +72,16 @@ dependencies {
 
     // ML Kit Object Detection (on-device)
     implementation("com.google.mlkit:object-detection:17.0.1")
+
+    // ML Kit Image Labeling (on-device)
+    implementation("com.google.mlkit:image-labeling:17.0.7")
+
+    // TensorFlow Lite (for Braille recognition)
+    implementation("org.tensorflow:tensorflow-lite:2.14.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
+
+    // Location Services (for Emergency mode)
+    implementation("com.google.android.gms:play-services-location:21.1.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

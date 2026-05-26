@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Keeper-Eye</string>
-    <string name="app_subtitle">Guía segura en cada paso</string>
-    <string name="app_logo_description">Logo de Keeper-Eye</string>
+    <string name="app_name">KEEPER-EYE</string>
+    <string name="app_subtitle">Tu guía segura en cada paso</string>
+    <string name="app_logo_description">Logo de KEEPER-EYE</string>
+    <string name="app_version">v3.0.0</string>
 
+    <!-- Voice Assistant Welcome -->
+    <string name="welcome_message">Bienvenido a KEEPER-EYE. Tu guía segura en cada paso.</string>
+    <string name="voice_menu">Di uno para detectar obstáculos. Di dos para lectura OCR. Di tres para describir imágenes. Di cuatro para lectura Braille. Di cinco para detectar colores. Di seis para saber qué estoy viendo.</string>
+    <string name="listening">Escuchando…</string>
+    <string name="voice_not_available">Reconocimiento de voz no disponible</string>
+
+    <!-- Module titles -->
+    <string name="module_obstacles">Detectar Obstáculos</string>
+    <string name="module_ocr">Lectura OCR</string>
+    <string name="module_describe">Describir Imagen</string>
+    <string name="module_braille">Lector Braille</string>
+    <string name="module_colors">Detectar Colores</string>
+    <string name="module_vision">¿Qué Estoy Viendo?</string>
+    <string name="module_assistant">Modo Asistente</string>
+    <string name="module_emergency">Emergencia</string>
+
+    <!-- Module descriptions -->
+    <string name="module_obstacles_desc">Detecta personas, vehículos y objetos cercanos</string>
+    <string name="module_ocr_desc">Lee texto en tiempo real con la cámara</string>
+    <string name="module_describe_desc">Describe escenas completas con IA</string>
+    <string name="module_braille_desc">Reconoce y traduce texto Braille</string>
+    <string name="module_colors_desc">Identifica colores de objetos</string>
+    <string name="module_vision_desc">Interpreta todo tu entorno</string>
+    <string name="module_assistant_desc">Asistente continuo inteligente</string>
+    <string name="module_emergency_desc">Envía alerta con tu ubicación</string>
+
+    <!-- Voice commands -->
+    <string name="cmd_one">uno</string>
+    <string name="cmd_two">dos</string>
+    <string name="cmd_three">tres</string>
+    <string name="cmd_four">cuatro</string>
+    <string name="cmd_five">cinco</string>
+    <string name="cmd_six">seis</string>
+    <string name="cmd_help">ayuda</string>
+    <string name="cmd_home">inicio</string>
+    <string name="cmd_exit">salir</string>
+    <string name="cmd_emergency">emergencia</string>
+
+    <!-- OCR -->
     <string name="start_scan">Iniciar Escaneo</string>
     <string name="start_scan_description">Abrir cámara para detectar texto</string>
-    <string name="ocr_title">Escaneo OCR</string>
+    <string name="ocr_title">Lectura OCR</string>
+    <string name="scanning">Buscando texto…</string>
 
+    <!-- Obstacles -->
     <string name="obstacle_detector">Detector de Obstáculos</string>
     <string name="obstacle_detector_title">Detector de Obstáculos</string>
     <string name="obstacle_detector_description">Detectar obstáculos con la cámara</string>
@@ -15,21 +57,64 @@
     <string name="obstacle_detected">Obstáculo detectado</string>
     <string name="obstacle_count_format">%d objeto(s) detectado(s)</string>
 
+    <!-- Image Description -->
+    <string name="describe_title">Descripción de Imagen</string>
+    <string name="describe_processing">Analizando imagen…</string>
+    <string name="describe_result_prefix">Se observa</string>
+    <string name="describe_no_result">No se pudo describir la imagen</string>
+    <string name="describe_capture">Capturar y describir</string>
+
+    <!-- Braille -->
+    <string name="braille_title">Lector Braille</string>
+    <string name="braille_scanning">Buscando texto Braille…</string>
+    <string name="braille_detected">Texto Braille detectado</string>
+    <string name="braille_no_text">No se detectó texto Braille</string>
+    <string name="braille_capture">Capturar Braille</string>
+
+    <!-- Colors -->
+    <string name="color_title">Detector de Colores</string>
+    <string name="color_scanning">Analizando colores…</string>
+    <string name="color_detected_format">Color detectado: %s</string>
+    <string name="color_no_result">No se pudo detectar el color</string>
+
+    <!-- What Am I Seeing -->
+    <string name="vision_title">¿Qué Estoy Viendo?</string>
+    <string name="vision_analyzing">Interpretando entorno…</string>
+    <string name="vision_result_prefix">Estás observando</string>
+
+    <!-- Smart Assistant -->
+    <string name="assistant_title">Modo Asistente Inteligente</string>
+    <string name="assistant_active">Asistente activo</string>
+    <string name="assistant_monitoring">Monitoreando entorno…</string>
+
+    <!-- Emergency -->
+    <string name="emergency_title">Modo Emergencia</string>
+    <string name="emergency_sending">Enviando alerta…</string>
+    <string name="emergency_sent">Alerta enviada correctamente</string>
+    <string name="emergency_failed">No se pudo enviar la alerta</string>
+    <string name="emergency_no_contacts">No hay contactos de emergencia configurados</string>
+    <string name="emergency_configure">Configurar contacto de emergencia</string>
+
+    <!-- History -->
     <string name="history">Historial</string>
     <string name="history_description">Ver textos detectados anteriormente</string>
     <string name="history_title">Historial</string>
+    <string name="empty_history">No hay textos en el historial</string>
+    <string name="tap_to_listen">Toca para escuchar</string>
 
-    <string name="scanning">Buscando texto…</string>
+    <!-- Common actions -->
     <string name="repeat">Repetir</string>
     <string name="stop">Detener</string>
     <string name="back">Volver</string>
     <string name="clear">Limpiar</string>
-
     <string name="speed_format">Velocidad: %.1fx</string>
-    <string name="empty_history">No hay textos en el historial</string>
-    <string name="tap_to_listen">Toca para escuchar</string>
+    <string name="camera_permission_denied">Se necesita permiso de cámara para funcionar</string>
+    <string name="location_permission_denied">Se necesita permiso de ubicación para emergencias</string>
+    <string name="sms_permission_denied">Se necesita permiso de SMS para enviar alertas</string>
 
-    <string name="camera_permission_denied">Se necesita permiso de cámara para escanear texto</string>
+    <!-- Accessibility -->
+    <string name="accessibility_high_contrast">Alto contraste activado</string>
+    <string name="accessibility_voice_nav">Navegación por voz activa</string>
 
-    <string name="version">v1.1.0</string>
+    <string name="version">v3.0.0</string>
 </resources>

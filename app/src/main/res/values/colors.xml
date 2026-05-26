@@ -1,27 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Background colors matching logo -->
-    <color name="background_dark">#FF0A1628</color>
-    <color name="panel_dark">#FF0F1E35</color>
-    <color name="card_dark">#FF152640</color>
-    <color name="card_stroke">#FF1E3455</color>
-    <color name="overlay_dark">#CC0A1628</color>
+    <!-- KEEPER-EYE 3.0 Material Design 3 Palette -->
+    <!-- Primary: Purple -->
+    <color name="md_theme_primary">#FF6A5AE0</color>
+    <color name="md_theme_onPrimary">#FFFFFFFF</color>
+    <color name="md_theme_primaryContainer">#FF8B7CF0</color>
+    <color name="md_theme_onPrimaryContainer">#FFFFFFFF</color>
 
-    <!-- Accent colors from logo -->
-    <color name="accent_blue">#FF2196F3</color>
-    <color name="accent_cyan">#FF00BCD4</color>
-    <color name="accent_light_blue">#FF4FC3F7</color>
-    <color name="accent_green">#FF00E676</color>
-    <color name="accent_green_dark">#FF00C853</color>
-    <color name="button_red">#FFEF5350</color>
-    <color name="accent_orange">#FFFFB74D</color>
+    <!-- Secondary: Violet -->
+    <color name="md_theme_secondary">#FF9C27B0</color>
+    <color name="md_theme_onSecondary">#FFFFFFFF</color>
+    <color name="md_theme_secondaryContainer">#FFCE93D8</color>
+    <color name="md_theme_onSecondaryContainer">#FF1A0020</color>
+
+    <!-- Tertiary: Light Purple -->
+    <color name="md_theme_tertiary">#FFB388FF</color>
+    <color name="md_theme_onTertiary">#FF1A0040</color>
+
+    <!-- Background & Surface -->
+    <color name="md_theme_background">#FF0D0B1A</color>
+    <color name="md_theme_onBackground">#FFFFFFFF</color>
+    <color name="md_theme_surface">#FF1A1530</color>
+    <color name="md_theme_onSurface">#FFFFFFFF</color>
+    <color name="md_theme_surfaceVariant">#FF2D2545</color>
+    <color name="md_theme_onSurfaceVariant">#FFCBC4E0</color>
+
+    <!-- Error -->
+    <color name="md_theme_error">#FFEF5350</color>
+    <color name="md_theme_onError">#FFFFFFFF</color>
+
+    <!-- Outline -->
+    <color name="md_theme_outline">#FF4A3D80</color>
+    <color name="md_theme_outlineVariant">#FF3D3260</color>
+
+    <!-- Card & Panel -->
+    <color name="card_background">#FF1E1835</color>
+    <color name="card_stroke">#FF3A2F60</color>
+    <color name="panel_dark">#FF150F2A</color>
+
+    <!-- Accent colors for modules -->
+    <color name="module_obstacles">#FFEF5350</color>
+    <color name="module_ocr">#FF42A5F5</color>
+    <color name="module_describe">#FF66BB6A</color>
+    <color name="module_braille">#FFFFB74D</color>
+    <color name="module_colors">#FFAB47BC</color>
+    <color name="module_vision">#FF26C6DA</color>
+    <color name="module_emergency">#FFE53935</color>
+    <color name="module_assistant">#FF7C4DFF</color>
+
+    <!-- Status colors -->
+    <color name="status_success">#FF00E676</color>
+    <color name="status_warning">#FFFFAB40</color>
+    <color name="status_danger">#FFFF5252</color>
 
     <!-- Text colors -->
     <color name="text_primary">#FFFFFFFF</color>
-    <color name="text_secondary">#FFB0C4DE</color>
+    <color name="text_secondary">#FFCBC4E0</color>
+    <color name="text_disabled">#FF6B5F8A</color>
 
-    <!-- Theme colors -->
-    <color name="colorPrimary">#FF2196F3</color>
-    <color name="colorPrimaryDark">#FF0A1628</color>
-    <color name="colorAccent">#FF00BCD4</color>
+    <!-- Legacy compat (used by existing layouts) -->
+    <color name="colorPrimary">#FF6A5AE0</color>
+    <color name="colorPrimaryDark">#FF0D0B1A</color>
+    <color name="colorAccent">#FF8B7CF0</color>
+    <color name="background_dark">#FF0D0B1A</color>
+    <color name="accent_green">#FF6A5AE0</color>
+    <color name="accent_green_dark">#FF5040C0</color>
+    <color name="overlay_dark">#CC0D0B1A</color>
+    <color name="accent_blue">#FF6A5AE0</color>
+    <color name="accent_cyan">#FF8B7CF0</color>
+    <color name="accent_light_blue">#FFB388FF</color>
+    <color name="accent_orange">#FFFFB74D</color>
+    <color name="button_red">#FFEF5350</color>
 </resources>

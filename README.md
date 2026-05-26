@@ -1,27 +1,51 @@
-# KEEPER EYE
+# KEEPER-EYE 3.0
 
-Aplicacion movil Android nativa enfocada en accesibilidad para personas con discapacidad visual. Utiliza OCR en tiempo real y lectura por voz, funcionando completamente offline sin necesidad de backend.
+**"Tu guía segura en cada paso"**
 
-## Caracteristicas
+Asistente inteligente de accesibilidad para personas con discapacidad visual. Utiliza visión artificial, inteligencia artificial y comandos de voz para interpretar el entorno de forma autónoma, segura e independiente.
 
-- **OCR en tiempo real** - Deteccion de texto con la camara usando Google ML Kit (on-device)
-- **Lectura por voz** - Reproduccion automatica del texto detectado usando Android TTS
-- **Deteccion de palabras clave** - Prioriza la lectura de palabras como "peligro", "alto", "salida"
-- **Accesibilidad** - Botones grandes, alto contraste, vibracion al detectar texto
-- **Historial** - Guarda los ultimos textos detectados en SQLite local
-- **100% Offline** - Todo el procesamiento es local, sin envio de datos a internet
-- **Privacidad** - Ningun dato sale del dispositivo
+## Características Principales
 
-## Stack Tecnologico
+- **Asistente por Voz Automático** - Escucha continua sin necesidad de tocar la pantalla
+- **Detección de Obstáculos** - ML Kit Object Detection con alertas por voz y vibración
+- **Lectura OCR en Tiempo Real** - Detección y lectura automática de texto
+- **Descripción de Imágenes** - IA visual para describir escenas completas
+- **Lector de Braille** - Reconocimiento de texto Braille mediante cámara
+- **Detector de Colores** - Identificación precisa de colores y variantes
+- **¿Qué Estoy Viendo?** - Interpretación completa del entorno (OCR + objetos + colores)
+- **Modo Asistente Inteligente** - Monitoreo continuo con priorización de riesgos
+- **Modo Emergencia** - Envío de alertas GPS por SMS a contactos de emergencia
+- **Accesibilidad Total** - Compatible con TalkBack, alto contraste, vibración inteligente
 
-| Componente | Tecnologia |
+## Módulos y Comandos de Voz
+
+| Comando | Módulo | Función |
+|---------|--------|---------|
+| "Uno" | Obstáculos | Detecta personas, vehículos, escaleras, muebles |
+| "Dos" | OCR | Lee texto en tiempo real |
+| "Tres" | Describir | Describe escenas con IA |
+| "Cuatro" | Braille | Reconoce y traduce Braille |
+| "Cinco" | Colores | Identifica colores de objetos |
+| "Seis" | Visión | Interpreta todo el entorno |
+| "Ayuda" | — | Explica funciones disponibles |
+| "Inicio" | — | Vuelve al menú principal |
+| "Salir" | — | Cierra el módulo actual |
+| "Emergencia" | — | Envía alerta con ubicación |
+
+## Stack Tecnológico
+
+| Componente | Tecnología |
 |---|---|
 | Lenguaje | Kotlin |
 | UI | Material Design 3 |
-| Camara | CameraX |
-| OCR | Google ML Kit Text Recognition (on-device) |
-| Voz | Android TextToSpeech API |
-| Base de datos | SQLite |
+| Cámara | CameraX |
+| OCR | Google ML Kit Text Recognition |
+| Objetos | Google ML Kit Object Detection |
+| Etiquetas | Google ML Kit Image Labeling |
+| Braille | Procesamiento de imagen propio |
+| Voz TTS | Android TextToSpeech API |
+| Voz STT | Android SpeechRecognizer |
+| Ubicación | Google Play Services Location |
 | Min SDK | API 24 (Android 7.0) |
 | Target SDK | API 34 (Android 14) |
 
@@ -30,28 +54,54 @@ Aplicacion movil Android nativa enfocada en accesibilidad para personas con disc
 ```
 app/src/main/
 ├── java/com/keepereye/app/
-│   ├── MainActivity.kt          # Pantalla principal
-│   ├── ScanActivity.kt          # Camara + OCR + TTS
-│   ├── HistoryActivity.kt       # Historial de textos
-│   ├── ocr/
-│   │   ├── TextRecognitionAnalyzer.kt  # Procesamiento ML Kit
-│   │   └── TextOverlayView.kt         # Bounding boxes
+│   ├── MainActivity.kt              # Pantalla principal + voz
+│   ├── ScanActivity.kt              # Módulo 2: OCR
+│   ├── ObstacleActivity.kt          # Módulo 1: Obstáculos
+│   ├── DescribeActivity.kt          # Módulo 3: Descripción
+│   ├── BrailleActivity.kt           # Módulo 4: Braille
+│   ├── ColorDetectionActivity.kt    # Módulo 5: Colores
+│   ├── VisionActivity.kt            # Módulo 6: Visión completa
+│   ├── SmartAssistantActivity.kt    # Modo Asistente
+│   ├── EmergencyActivity.kt         # Modo Emergencia
+│   ├── HistoryActivity.kt           # Historial
+│   ├── voice/
+│   │   └── VoiceCommandProcessor.kt # Procesamiento de comandos
 │   ├── tts/
-│   │   └── TextToSpeechManager.kt     # Gestion de voz
+│   │   └── TextToSpeechManager.kt   # Gestión de voz
+│   ├── ocr/
+│   │   ├── TextRecognitionAnalyzer.kt
+│   │   └── TextOverlayView.kt
+│   ├── obstacle/
+│   │   ├── ObjectDetectionAnalyzer.kt
+│   │   ├── ObstacleAlertManager.kt
+│   │   ├── DetectedObstacle.kt
+│   │   └── ObjectOverlayView.kt
+│   ├── describe/
+│   │   └── ImageDescriber.kt
+│   ├── braille/
+│   │   └── BrailleRecognizer.kt
+│   ├── color/
+│   │   └── ColorAnalyzer.kt
+│   ├── vision/
+│   │   └── SceneInterpreter.kt
+│   ├── assistant/
+│   │   └── SmartAssistantEngine.kt
+│   ├── emergency/
+│   │   └── EmergencyContactManager.kt
 │   ├── ai/
-│   │   └── KeywordDetector.kt         # Deteccion de palabras clave
+│   │   └── KeywordDetector.kt
 │   └── history/
-│       ├── HistoryEntry.kt            # Modelo de datos
-│       ├── HistoryDatabaseHelper.kt   # SQLite helper
-│       ├── HistoryRepository.kt       # Repositorio
-│       └── HistoryAdapter.kt          # RecyclerView adapter
+│       ├── HistoryEntry.kt
+│       ├── HistoryDatabaseHelper.kt
+│       ├── HistoryRepository.kt
+│       └── HistoryAdapter.kt
 └── res/
-    ├── layout/         # Layouts XML
-    ├── values/         # Strings, colors, themes
-    └── drawable/       # Iconos vectoriales
+    ├── layout/
+    ├── values/
+    └── drawable/
 ```
 
-## Compilacion
+## Compilación
 
 ### Requisitos
 - Android Studio Hedgehog (2023.1.1) o superior
@@ -62,7 +112,6 @@ app/src/main/
 ```bash
 ./gradlew assembleDebug
 ```
-El APK se generara en `app/build/outputs/apk/debug/app-debug.apk`
 
 ### Generar APK Release
 ```bash
@@ -71,16 +120,22 @@ El APK se generara en `app/build/outputs/apk/debug/app-debug.apk`
 
 ## Permisos
 
-- `CAMERA` - Para escaneo OCR en tiempo real
-- `VIBRATE` - Para feedback tactil al detectar texto
+| Permiso | Uso |
+|---------|-----|
+| `CAMERA` | Todos los módulos de visión |
+| `RECORD_AUDIO` | Reconocimiento de voz continuo |
+| `VIBRATE` | Alertas táctiles de obstáculos |
+| `ACCESS_FINE_LOCATION` | Modo emergencia (GPS) |
+| `SEND_SMS` | Modo emergencia (alerta) |
+| `INTERNET` | Descarga de modelos ML Kit |
 
-## Palabras Clave Detectadas
+## Paleta de Colores
 
-| Palabra | Prioridad | Tipo |
-|---|---|---|
-| peligro, danger, cuidado, emergencia | CRITICA | Alerta inmediata con vibracion larga |
-| alto, stop, pare, no pasar, prohibido, precaucion | ALTA | Alerta con vibracion |
-| salida, exit, entrada, escalera, ascensor, bano | MEDIA | Aviso informativo |
+- **Primario:** `#6A5AE0` (Morado)
+- **Secundario:** `#9C27B0` (Violeta)
+- **Terciario:** `#B388FF` (Lila)
+- **Fondo:** `#0D0B1A` (Negro profundo)
+- **Superficie:** `#1A1530` (Gris oscuro)
 
 ## Licencia
 
