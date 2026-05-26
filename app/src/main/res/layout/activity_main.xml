@@ -16,10 +16,10 @@
         <!-- Logo and Title -->
         <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginTop="16dp"
-            android:src="@drawable/ic_launcher_foreground"
+            android:src="@drawable/keeper_eye_logo"
             android:contentDescription="@string/app_logo_description"
             android:importantForAccessibility="yes" />
 
