@@ -2,14 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Vibration -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Voice Recognition -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Emergency: Location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Emergency: SMS -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- Internet for ML Kit model downloads -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
     <uses-feature
         android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
         android:required="false" />
 
     <application
@@ -21,10 +35,12 @@
         android:theme="@style/Theme.KeeperEye"
         tools:targetApi="34">
 
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.KeeperEye.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,27 +48,64 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ScanActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
-            android:name=".HistoryActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
+        <!-- Module 1: Obstacle Detection -->
         <activity
             android:name=".ObstacleActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:screenOrientation="portrait" />
 
+        <!-- Module 2: OCR Scan -->
+        <activity
+            android:name=".ScanActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Module 3: Image Description -->
+        <activity
+            android:name=".DescribeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Module 4: Braille Reader -->
+        <activity
+            android:name=".BrailleActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Module 5: Color Detection -->
+        <activity
+            android:name=".ColorDetectionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Module 6: What Am I Seeing -->
+        <activity
+            android:name=".VisionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Smart Assistant Mode -->
+        <activity
+            android:name=".SmartAssistantActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- Emergency Mode -->
+        <activity
+            android:name=".EmergencyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- History -->
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- ML Kit model dependencies -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="ocr,object_detection" />
+            android:value="ocr,object_detection,label" />
 
     </application>
 
